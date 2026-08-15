@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FAF5F2">
+<title>Opology — Phone Cases & More</title>
+<meta name="description" content="Ốp lưng cá tính, chất lượng thật. Theo dõi Opology và khám phá bộ sưu tập ốp lưng mới nhất.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ======================================================================
+   🎨 KHU VỰC TÙY CHỈNH — CHỈ CẦN SỬA Ở ĐÂY LÀ ĐỦ
+   ======================================================================
+   1) ẢNH NỀN (--bg-mobile / --bg-desktop): dán URL ảnh (khuyên dùng link
+      ảnh đã upload lên host/CDN thay vì base64 dài — base64 quá dài rất
+      dễ bị đứt/lỗi khi copy-paste qua nhiều nơi, gây ra hiện tượng
+      "ảnh bị vỡ/mất" như trước. Nếu vẫn muốn dùng base64, dán y nguyên
+      chuỗi base64 gốc của bạn vào bên trong url('...').
+   2) ẢNH SẢN PHẨM: KHÔNG sửa ở đây nữa. Kéo xuống phần
+      <!-- SẢN PHẨM NỔI BẬT --> trong <body> và sửa trực tiếp thuộc tính
+      src="" của từng <img> — mỗi sản phẩm giờ chỉ cần sửa MỘT chỗ duy
+      nhất (ảnh + link mua nằm cạnh nhau), tránh bị nhầm chỗ như bản cũ.
+   ====================================================================== */
+:root{
+  --cream:#FAF5F2;
+  --cream-2:#FFFFFF;
+  --red:#F73249;
+  --red-dark:#D81F39;
+  --yellow:#FDB908;
+  --yellow-dark:#E6A400;
+  --ink:#121212;
+  --teal:#1FA6A6;
+
+  /* 👉 1) ẢNH NỀN GIAO DIỆN ĐIỆN THOẠI (ảnh dọc) — dán URL hoặc base64 GỐC của bạn vào trong url('...') */
+  --bg-mobile: url('https://i.pinimg.com/1200x/be/2e/dd/be2edd6a56b0e498555df5a82de72a8e.jpg');
+
+  /* 👉 2) ẢNH NỀN GIAO DIỆN MÁY TÍNH (ảnh ngang) — dán URL hoặc base64 GỐC của bạn vào trong url('...') */
+  --bg-desktop: url('https://i.pinimg.com/1200x/9e/b2/a6/9eb2a6bbe1c163cb997c16322952e439.jpg');
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+html{ scroll-behavior:smooth; }
+
+body{
+  font-family:'Quicksand', sans-serif;
+  color:var(--ink);
+  background-color:var(--cream); /* nền dự phòng nếu ảnh nền chưa tải được, tránh trang bị "trắng/vỡ" */
+  min-height:100vh;
+  position:relative;
+  z-index:0;
+  overflow-x:hidden;
+}
+
+/* ============================================
+   🖼️ NỀN TRANG — dùng ảnh thật làm nền, làm mờ (blur)
+   + phủ một lớp màu cream bán trong suốt để ảnh trở nên
+   "mờ mờ" phía sau, không chọi với khối card ở trên.
+
+   SỬA LỖI KÍCH THƯỚC:
+   - Trước đây dùng "inset:-40px" CỘNG THÊM "transform:scale(1.05)"
+     nên ảnh bị phóng to gấp đôi mức cần thiết → nhìn "to/vỡ bố cục".
+   - Giờ chỉ overscan vừa đủ (12px) để che viền khi làm mờ (blur 5px),
+     KHÔNG scale thêm nữa. background-size:cover vẫn giữ đúng tỉ lệ ảnh,
+     không bị méo, không bị crop quá tay.
+   - Mobile mặc định dùng --bg-mobile (ảnh dọc).
+   - Từ 860px trở lên (máy tính) tự đổi sang --bg-desktop (ảnh ngang).
+   ============================================ */
+body::before{
+  content:"";
+  position:fixed;
+  inset:-12px;                 /* chỉ vừa đủ để blur không hụt viền, không phóng to ảnh */
+  z-index:-2;
+  background-image: var(--bg-mobile);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--cream); /* nếu ảnh lỗi vẫn có nền cream thay vì màn hình trắng/trống */
+  filter: blur(5px) saturate(1.05) brightness(1.02);
+  /* đã bỏ transform:scale(1.05) — đây là nguyên nhân chính khiến ảnh nền bị phóng to quá mức */
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.22), transparent 60%),
+    rgba(250,245,242,.30);     /* lớp phủ làm ảnh nền mờ/nhạt đi */
+}
+@media (min-width:860px){
+  body::before{
+    background-image: var(--bg-desktop);
+  }
+}
+
+/* ============================================
+   ✨ Doodle trang trí (tĩnh, không cản trở nội dung)
+   ============================================ */
+.doodle{ position:absolute; z-index:0; pointer-events:none; opacity:.9; }
+@media (prefers-reduced-motion: no-preference){
+  .doodle.spark{ animation: twinkle 2.6s ease-in-out infinite; }
+}
+@keyframes twinkle{
+  0%,100%{ transform:scale(1) rotate(0deg); opacity:.85; }
+  50%{ transform:scale(1.18) rotate(8deg); opacity:1; }
+}
+
+/* ============================================
+   📐 LAYOUT CHUNG
+   ============================================ */
+.page{
+  position:relative;
+  z-index:1;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:36px 16px 60px;
+}
+
+.card{
+  width:100%;
+  max-width:440px;
+  background:var(--cream);
+  border:2.5px solid var(--ink);
+  border-radius:32px;
+  box-shadow:8px 10px 0 var(--ink);
+  padding:32px 22px 26px;
+  position:relative;
+  overflow:hidden;
+}
+
+@media (min-width:860px){
+  .page{ padding:64px 24px 80px; align-items:flex-start; }
+  .card{ max-width:720px; padding:44px 46px 34px; border-radius:40px; box-shadow:12px 14px 0 var(--ink); margin-top:20px; }
+}
+
+/* ============================================
+   🏷️ HEADER / LOGO
+   ============================================ */
+.brand{ text-align:center; position:relative; z-index:2; }
+
+.logo-wrap{ margin:0 auto 6px; max-width:250px; }
+.logo-wrap img{ width:100%; display:block; }
+
+@media (min-width:860px){
+  .logo-wrap{ max-width:300px; }
+}
+
+.tagline{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:800;
+  font-size:26px;
+  line-height:1.15;
+  margin-top:6px;
+  position:relative;
+  display:inline-block;
+}
+.tagline .accent{ color:var(--red); }
+
+.tagline-underline{
+  display:block;
+  width:150px;
+  height:10px;
+  margin:2px auto 0;
+}
+
+@media (min-width:860px){
+  .tagline{ font-size:32px; }
+  .tagline-underline{ width:190px; }
+}
+
+.bio-line{
+  font-weight:600;
+  font-size:14.5px;
+  color:#3a3a3a;
+  margin-top:10px;
+}
+
+/* trust strip — lấy nguyên văn 3 cam kết từ banner thương hiệu */
+.trust-strip{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:16px auto 0;
+  border:2px solid var(--ink);
+  border-radius:999px;
+  padding:8px 14px;
+  background:var(--cream-2);
+  max-width:100%;
+}
+.trust-strip .item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+  font-size:10.5px;
+  letter-spacing:.2px;
+  white-space:nowrap;
+}
+.trust-strip .divider{ width:1.5px; height:16px; background:#d8d2c8; }
+.trust-strip svg{ flex:none; }
+
+@media (min-width:860px){
+  .trust-strip .item{ font-size:12px; }
+}
+
+/* ============================================
+   🔗 3 MẠNG XÃ HỘI
+   ============================================ */
+.section-label{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:700;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  margin:26px 0 10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.section-label .dot{ width:7px; height:7px; border-radius:50%; background:var(--red); }
+.section-label .dot.y{ background:var(--yellow); }
+
+.social-row{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+@media (min-width:860px){
+  .social-row{ flex-direction:row; }
+}
+
+.social-btn{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:var(--ink);
+  background:var(--cream-2);
+  border:2.2px solid var(--ink);
+  border-radius:18px;
+  padding:13px 16px;
+  font-family:'Baloo 2', sans-serif;
+  font-weight:700;
+  font-size:15px;
+  box-shadow:4px 4px 0 var(--ink);
+  transition:transform .15s ease, box-shadow .15s ease;
+  flex:1;
+}
+.social-btn:hover{ transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
+.social-btn:active{ transform:translate(0,0); box-shadow:2px 2px 0 var(--ink); }
+.social-btn:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
+
+.social-btn .icon-wrap{
+  width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  flex:none;
+}
+.social-btn.tiktok .icon-wrap{ background:var(--ink); }
+.social-btn.facebook .icon-wrap{ background:#1877F2; }
+.social-btn.threads .icon-wrap{ background:#000; }
+
+.social-btn .handle{ font-family:'Quicksand',sans-serif; font-weight:600; font-size:12px; color:#6b6b6b; display:block; margin-top:1px; }
+.social-btn .label-col{ display:flex; flex-direction:column; }
+.social-btn .arrow{ margin-left:auto; flex:none; }
+
+/* ============================================
+   🛍️ 5 SẢN PHẨM TRƯNG BÀY
+   ============================================
+   SỬA LỖI HIỂN THỊ ẢNH:
+   - Bản cũ dùng CSS variable (--p1-img…--p5-img) làm 1 trong 2 lớp
+     "background-image" chồng lên gradient. Cách này khiến việc sửa ảnh
+     bị tách rời khỏi khối sản phẩm (phải kéo lên tận đầu file CSS),
+     rất dễ sửa nhầm chỗ và trông như ảnh "không lên" / bị gradient
+     đè lên trên.
+   - Bản sửa: mỗi sản phẩm có SẴN 1 thẻ <img> thật nằm ngay trong card,
+     luôn nổi trên gradient (không thể bị đè), object-fit:cover để
+     lấp đầy khung vuông. Nếu link ảnh lỗi, onerror sẽ tự ẩn <img> và
+     lộ ra gradient nền — không còn tình trạng vỡ layout.
+   ============================================ */
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:14px;
+}
+.product-grid a:nth-child(5){ grid-column: span 2; }
+
+@media (min-width:860px){
+  .product-grid{ grid-template-columns:repeat(5, 1fr); gap:12px; }
+  .product-grid a:nth-child(5){ grid-column: span 1; }
+}
+
+.product-card{
+  text-decoration:none;
+  color:var(--ink);
+  background:var(--cream-2);
+  border:2.2px solid var(--ink);
+  border-radius:18px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:4px 4px 0 var(--ink);
+  transition:transform .18s ease, box-shadow .18s ease, rotate .18s ease;
+}
+.product-card:hover{ transform:translate(-2px,-4px) rotate(-1.5deg); box-shadow:6px 8px 0 var(--ink); }
+.product-card:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
+
+.product-img{
+  aspect-ratio:1/1;
+  min-height:120px;
+  width:100%;
+  position:relative;
+  border-bottom:2.2px solid var(--ink);
+  overflow:hidden; /* để bo góc không bị ảnh tràn ra ngoài */
+}
+/* ảnh thật — luôn nằm TRÊN gradient, lấp đầy khung vuông, không méo */
+.product-img img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+/* gradient chỉ đóng vai trò nền dự phòng khi chưa có ảnh / ảnh lỗi */
+.p1 .product-img{ background:linear-gradient(160deg, #f3ecdf, #e9dfcd); }
+.p2 .product-img{ background:linear-gradient(160deg, #2b2b2b, #141414); }
+.p3 .product-img{ background:linear-gradient(160deg, #f5f5f5, #e6e6e6); }
+.p4 .product-img{ background:linear-gradient(160deg, #ffe1c9, #f7c9a3); }
+.p5 .product-img{ background:linear-gradient(160deg, #d7f0ee, #b9e3df); }
+
+.product-name{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:700;
+  font-size:12.5px;
+  line-height:1.25;
+  padding:9px 10px 2px;
+  min-height:34px;
+}
+.product-cta{
+  font-weight:600;
+  font-size:11px;
+  color:var(--red-dark);
+  padding:0 10px 10px;
+  margin-top:auto;
+}
+
+/* ============================================
+   ⚫ FOOTER THƯƠNG HIỆU
+   ============================================ */
+.brand-footer{
+  margin-top:28px;
+  background:var(--ink);
+  border-radius:999px;
+  padding:12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.brand-footer a{
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:#fff; flex:none;
+}
+.brand-footer .handle{
+  color:#fff; font-weight:700; font-family:'Baloo 2',sans-serif; font-size:12.5px;
+}
+.brand-footer .hashtag{
+  color:var(--yellow); font-weight:700; font-family:'Baloo 2',sans-serif; font-size:12.5px;
+}
+.brand-footer .fsep{ color:#555; }
+.brand-footer .site{ color:#fff; font-weight:600; font-size:12.5px; display:flex; align-items:center; gap:5px; }
+
+.visually-hidden{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; border:0; padding:0; margin:-1px;
+}
+</style>
+</head>
+<body>
+
+<!-- ✨ Doodle trang trí rải rác quanh trang (không ảnh hưởng nội dung) -->
+<svg class="doodle spark" style="top:8%; right:6%; width:26px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" fill="#F73249"/></svg>
+<svg class="doodle spark" style="bottom:14%; left:5%; width:20px; animation-delay:.8s;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" fill="#FDB908"/></svg>
+<svg class="doodle" style="top:20%; left:4%; width:26px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2.3 4 6.3 4c2.1 0 3.8 1.2 5.7 3.4C13.9 5.2 15.6 4 17.7 4c4 0 5.8 4 4.3 7.7C19.5 16.4 12 21 12 21z" fill="none" stroke="#121212" stroke-width="1.6"/></svg>
+
+<div class="page">
+  <main class="card">
+
+    <!-- ================= LOGO + TAGLINE ================= -->
+    <header class="brand">
+      <h1 class="logo-wrap">
+        <!-- 👉 Dán URL hoặc base64 GỐC của logo vào src bên dưới -->
+        <img src="https://raw.githubusercontent.com/vonam583-cloud/logo1/main/logo1.png" alt="Opology – Phone Cases &amp; More">
+      </h1>
+
+      <p class="tagline">Đổi ốp, đổi <span class="accent">mood.</span></p>
+      <svg class="tagline-underline" viewBox="0 0 150 10" aria-hidden="true"><path d="M2 6 Q 30 -2, 60 5 T 148 4" fill="none" stroke="#121212" stroke-width="2.4" stroke-linecap="round"/></svg>
+
+      <p class="bio-line">Ốp lưng cá tính cho mọi chiếc điện thoại</p>
+
+      <div class="trust-strip">
+        <span class="item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#F73249" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#F73249" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Ốp đẹp bảo vệ chuẩn
+        </span>
+        <span class="divider"></span>
+        <span class="item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="6" stroke="#FDB908" stroke-width="2"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke="#FDB908" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 9l1.7 1.7L15 7" stroke="#FDB908" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Chất lượng thật – giá tốt
+        </span>
+        <span class="divider"></span>
+        <span class="item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="1" y="7" width="13" height="9" rx="1.5" stroke="#1FA6A6" stroke-width="2"/><path d="M14 10h4l3 3v3h-7v-6z" stroke="#1FA6A6" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="18" r="1.8" stroke="#1FA6A6" stroke-width="2"/><circle cx="17.5" cy="18" r="1.8" stroke="#1FA6A6" stroke-width="2"/></svg>
+          Ship nhanh toàn quốc
+        </span>
+      </div>
+    </header>
+
+    <!-- ================= 3 MẠNG XÃ HỘI ================= -->
+    <!-- 👉 Dán 3 đường link mạng xã hội vào thuộc tính href bên dưới -->
+    <section aria-label="Kết nối mạng xã hội">
+      <p class="section-label"><span class="dot"></span>Kết nối với Opology</p>
+      <div class="social-row">
+
+        <!-- 👉 LINK TIKTOK tại đây -->
+        <a class="social-btn tiktok" href="https://www.tiktok.com/@quatangcotsong67" target="_blank" rel="noopener">
+          <span class="icon-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M16 3c.6 2.4 2.2 3.9 4.6 4.2v3.1c-1.6.1-3.1-.4-4.6-1.3v6.4c0 3.3-2.7 5.6-5.7 5.6-3.2 0-5.7-2.5-5.7-5.6 0-3.2 2.7-5.7 5.9-5.5v3.2c-1.4-.2-2.7.9-2.7 2.3 0 1.3 1.1 2.3 2.5 2.3 1.5 0 2.7-1.2 2.7-2.9V3h3z" fill="#fff"/></svg>
+          </span>
+          <span class="label-col">TikTok<span class="handle">@opology26.vn</span></span>
+          <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#121212" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+
+        <!-- 👉 LINK FACEBOOK tại đây -->
+        <a class="social-btn facebook" href="https://www.facebook.com/profile.php?id=100069461739992" target="_blank" rel="noopener">
+          <span class="icon-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15.5 8.5h-2c-.55 0-1 .45-1 1v2h3l-.4 3H12.5v7h-3v-7h-2v-3h2V9.2c0-2.3 1.7-4.2 4-4.2h2v3.5z" fill="#fff"/></svg>
+          </span>
+          <span class="label-col">Facebook<span class="handle">@opology26.vn</span></span>
+          <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#121212" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+
+        <!-- 👉 LINK THREADS tại đây -->
+        <!-- ĐÃ SỬA: thay icon Threads cũ (vẽ sai) bằng icon Threads chuẩn (logo pretzel/@ trắng trên nền đen) -->
+        <a class="social-btn threads" href="https://www.threads.com/@opology26" target="_blank" rel="noopener">
+          <span class="icon-wrap">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M6.321 6.016c-.27-.18-1.166-.802-1.166-.802.756-1.081 1.753-1.502 3.132-1.502.975 0 1.803.327 2.394.948s.928 1.509 1.005 2.644q.492.207.905.484c1.109.745 1.719 1.86 1.719 3.137 0 2.716-2.226 5.075-6.256 5.075C4.594 16 1 13.987 1 7.994 1 2.034 4.482 0 8.044 0 9.69 0 13.55.243 15 5.036l-1.36.353C12.516 1.974 10.163 1.43 8.006 1.43c-3.565 0-5.582 2.171-5.582 6.79 0 4.143 2.254 6.343 5.63 6.343 2.777 0 4.847-1.443 4.847-3.556 0-1.438-1.208-2.127-1.27-2.127-.236 1.234-.868 3.31-3.644 3.31-1.618 0-3.013-1.118-3.013-2.582 0-2.09 1.984-2.847 3.55-2.847.586 0 1.294.04 1.663.114 0-.637-.54-1.728-1.9-1.728-1.25 0-1.566.405-1.967.868ZM8.716 8.19c-2.04 0-2.304.87-2.304 1.416 0 .878 1.043 1.168 1.6 1.168 1.02 0 2.067-.282 2.232-2.423a6.2 6.2 0 0 0-1.528-.161" fill="#fff"/>
+            </svg>
+          </span>
+          <span class="label-col">Threads<span class="handle">@opology26.vn</span></span>
+          <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#121212" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ================= 5 SẢN PHẨM TRƯNG BÀY ================= -->
+    <!-- 👉 Mỗi sản phẩm giờ chỉ cần sửa NGAY TẠI ĐÂY (1 chỗ duy nhất):
+         - src="..."  → link ảnh sản phẩm (ảnh sẽ tự nổi trên khung màu, không còn bị đè)
+         - href="..." → link mua / link sản phẩm -->
+    <section aria-label="Sản phẩm nổi bật">
+      <p class="section-label"><span class="dot y"></span>Sản phẩm nổi bật</p>
+      <div class="product-grid">
+
+        <!-- Sản phẩm 1 -->
+        <a class="product-card p1" href="https://shop.tiktok.com/vn/pdp/1736266066086168387?_d=ef458990ifh54f&_svg=1&encode_params=MIIBQQQMXeWYny4lAIp_YvZcBIIBHXu60VeWtouPN6EnYx6068qZlRCs5gcK9uMJY-o1aQULiZcniKFmNIz2fyAnnu7tz-1AUtAGo7bcKJGLx1PaXz4BA-mPPGN5yBsT4A5_2fkoImN7ERn8SdBXrOcDXbF71ytqt9lhyUsXDIWicyyeebw0KWjNd3-W00S6N3tgnV0OEKnMc5u6gAY5QsxLHCwu2dbRFcQm4oKbgMxDi5U7V5uCfOui_rBL1zddcesqE3cDSjyc1toMSi40g7uNs_lZiJigVPkJHkcXT4mgLfHe3jh9zWk5UTkU5eTGNnfnFj9jjhjR57sYJP9wyUhAPnENRCgFOQX0neXKvHuaEo974J82aiEYp8qxeMepCZeDlmSXQx92nRjlsHQPP9KV0gQQX7fTFaxqDE3RtTX75G44lA%3D%3D&og_info=%7B%22title%22%3A%22V%E1%BB%8F+%C4%91i%E1%BB%87n+tho%E1%BA%A1i+m%E1%BA%B7t+t%E1%BB%A9c+gi%E1%BA%ADn+t%E1%BB%91i+gi%E1%BA%A3n+ph%C3%B9+h%E1%BB%A3p+iPhone17%5C%2F16%5C%2F15%5C%2F14%5C%2F13%5C%2F11%5C%2F7%5C%2F17pro%5C%2F17promax%2C+thi%E1%BA%BFt+k%E1%BA%BF+%C4%91%E1%BB%99c+%C4%91%C3%A1o+cho+iPhone16%5C%2F16plus%5C%2F16pro+m%E1%BA%ABu+m%E1%BB%9Bi%22%2C%22image%22%3A%22https%3A%5C%2F%5C%2Fp16-oec-sg.ibyteimg.com%5C%2Ftos-alisg-i-aphluv4xwc-sg%5C%2F0115c5656d6e4bf383152ff0e38fad7d~tplv-aphluv4xwc-resize-webp%3A260%3A260.webp%3Fdr%3D15582%26t%3D555f072d%26ps%3D933b5bde%26shp%3D7745054a%26shcp%3D9b759fb9%26idc%3Dmy2%26from%3D2001012042%22%7D&panel_source_v2=share_panel&share_app_id=1180&share_enter_from=&share_link_id=AF3BCD11-DE18-48B9-AFBB-16E46F5642C8&share_region=VN&social_share_type=15&timestamp=1786832767&trackParams=%7B%22enable_shop_tab_popup%22%3A1%2C%22device_id%22%3A%227389261949962421766%22%2C%22enter_from_info%22%3A%22product_share_outside%22%2C%22source_page_type%22%3A%22product_share%22%2C%22traffic_source_list%22%3A%5B7%5D%2C%22traffic_source%22%3A7%7D&tt_from=copy&u_code=&ug_btm=b7349%2Cb6661&unique_id=&utm_campaign=client_share&utm_medium=ios&utm_source=copy">
+          <div class="product-img">
+<img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0115c5656d6e4bf383152ff0e38fad7d~tplv-aphluv4xwc-resize-webp:800:800.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=607f11de&idc=my2&from=2378011839" alt="Focus On Your Goals" loading="lazy" onerror="this.remove()">          </div>
+          <span class="product-name">Vỏ điện thoại mặt tức giận tối giản phù hợp iPhone</span>
+          <span class="product-cta">Xem ngay →</span>
+        </a>
+
+        <!-- Sản phẩm 2 -->
+        <a class="product-card p2" href="https://shop.tiktok.com/vn/pdp/1734635000951768899?_d=ef458990ifh54f&_svg=1&encode_params=MIIBQQQMW-cCIk1-UU0Y_gQABIIBHbXhVfeCplVD7Cw095TzWzxEZlPBFWceBIwTK9I-IUOLuudNvaxNqjTgLTnB3BZk0E0-M09PNan7qtdGKp5Lie-FyS5pBsdkF91D7Z8zVpDYJgFxUWaX8HV_pik9ch_wLXE5_dhqRBRoTH_KRCtOr0RhZUDDdwEUkkuXVPR0sXhtx6lQidpQEG2FHPzxrpcT0kptosOd1fsfCyJT0lryuqgsYriKCHFOMYgrBI62PGiL9iRKmPBGTwhbKj21J022aN6N7aPPsDme8EbWOLBZegjJlDlSWOIeflkU_EUgrdgPMDbPpGZmIJ8TV88gedEtmQr4uwWo67IyI6bhdzuPB3GBKTcjojggGXu-C95jNkgWgVO3jYYcr3tibzeZTAQQ9CmJZMfNgkmN8P5ZDBsz5g%3D%3D&og_info=%7B%22title%22%3A%22M%E1%BB%99t+ch%C3%BA+m%C3%A8o+%C4%91%C6%B0%E1%BB%A3c+%C3%A1p+d%E1%BB%A5ng+cho+ng%C6%B0%E1%BB%9Di+Polynesia+iPhone17%5C%2F16%5C%2F15+ShouJiKe+%C4%91%C6%B0%E1%BB%A3c+14%5C%2F13%5C%2F11%5C%2F7%5C%2F17pro+%5C%2F+17promax+ti%E1%BB%87n+t%E1%BB%91i+%C4%91a+t%C3%ADnh+c%C3%A1ch+16+16plus+b%E1%BA%B1ng+16pro+m%E1%BB%9Bi%22%2C%22image%22%3A%22https%3A%5C%2F%5C%2Fp16-oec-va.ibyteimg.com%5C%2Ftos-maliva-i-o3syd03w52-us%5C%2F7b70e58941c94b4bb498dc78289ee632~tplv-o3syd03w52-resize-webp%3A260%3A260.webp%3Fdr%3D15582%26t%3D555f072d%26ps%3D933b5bde%26shp%3D7745054a%26shcp%3D9b759fb9%26idc%3Dmy2%26from%3D2001012042%22%7D&panel_source_v2=share_panel&share_app_id=1180&share_enter_from=&share_link_id=AA3B197C-B5EB-403F-A291-3A9A6F896E2C&share_region=VN&social_share_type=15&timestamp=1786832835&trackParams=%7B%22enable_shop_tab_popup%22%3A1%2C%22device_id%22%3A%227389261949962421766%22%2C%22enter_from_info%22%3A%22product_share_outside%22%2C%22source_page_type%22%3A%22product_share%22%2C%22traffic_source_list%22%3A%5B7%5D%2C%22traffic_source%22%3A7%7D&tt_from=copy&u_code=&ug_btm=b7349%2Cb6661&unique_id=&utm_campaign=client_share&utm_medium=ios&utm_source=copy">
+          <div class="product-img">
+            <img src="https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/0c40005f10664f1ea706bfd06d1a237f~tplv-o3syd03w52-resize-webp:800:800.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=607f11de&idc=my2&from=2378011839" alt="Focus On Your Goals" loading="lazy" onerror="this.remove()">
+          </div>
+          <span class="product-name">Một chú mèo được áp dụng cho người Polynesia iPhone</span>
+          <span class="product-cta">Xem ngay →</span>
+        </a>
+
+        <!-- Sản phẩm 3 -->
+        <a class="product-card p3" href="https://shop.tiktok.com/vn/pdp/1734524823838689091?_d=ef458990ifh54f&_svg=1&encode_params=MIIBQQQMPBBwV4LMJRa72lpgBIIBHaMWOCOVfC4cerVKXjqi0KpYzh_kxd-j4hXfJiB9hi5Cc_M6vuf9LdxRDzaO-TF1lBeHdrxfMVInCFvld_Mnte-tqSPVbISj-a3mGTY0VCWEVQurPx69MBqRWVGPLfziYlAMUWHsIBRt2VQSpp3-Jgu6BSvy0gwvj1Fs5Vw9GxhqlOI_OjA4Aj-s0zti-HKGPReCT5QeXSUqCzfAVwlXDxSgb14kWErTIe98VEZWx2GXhoqViaikHclpCwnPiQBsmsfvsGvyAYvlRHht_m70Genl-ZFj0HfvJSGm65l2sB57dbIiCzuvERowwA4IG0Or6HNttkfRBjbSumcx_AYfCoVwvYp3NMSaeSTkCcO4rt8WQRUWx2xtVFnmld7oHwQQPeZs4IRz4V26G5AXV2lFRw%3D%3D&og_info=%7B%22title%22%3A%22Big+Dog+cho+iPhone+17+16+15+tr%C6%B0%E1%BB%9Dng+h%E1%BB%A3p+14+13+11+7+17pro+17promax+%C4%91%C6%A1n+gi%E1%BA%A3n+16+c%C3%A1+t%C3%ADnh+16plus+m%E1%BB%9Bi+16pro+m%E1%BB%81m%22%2C%22image%22%3A%22https%3A%5C%2F%5C%2Fp16-oec-va.ibyteimg.com%5C%2Ftos-maliva-i-o3syd03w52-us%5C%2F5bd375296b5d41a78911659335b1dff3~tplv-o3syd03w52-resize-webp%3A260%3A260.webp%3Fdr%3D15582%26t%3D555f072d%26ps%3D933b5bde%26shp%3D7745054a%26shcp%3D9b759fb9%26idc%3Dmy2%26from%3D2001012042%22%7D&panel_source_v2=share_panel&share_app_id=1180&share_enter_from=&share_link_id=CE0D75BD-78FA-4A90-ACF9-8C6F69C7A099&share_region=VN&social_share_type=15&timestamp=1786832857&trackParams=%7B%22enable_shop_tab_popup%22%3A1%2C%22device_id%22%3A%227389261949962421766%22%2C%22enter_from_info%22%3A%22product_share_outside%22%2C%22source_page_type%22%3A%22product_share%22%2C%22traffic_source_list%22%3A%5B7%5D%2C%22traffic_source%22%3A7%7D&tt_from=copy&u_code=&ug_btm=b7349%2Cb6661&unique_id=&utm_campaign=client_share&utm_medium=ios&utm_source=copy">
+          <div class="product-img">
+            <img src="https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/dc05266faaee431da4cca0c66c18e9ed~tplv-o3syd03w52-resize-webp:800:800.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=607f11de&idc=my2&from=2378011839" alt="Keep It Simple" loading="lazy" onerror="this.remove()">
+          </div>
+          <span class="product-name">Big Dog cho iPhone 17 16 15 trường hợp 14 13 11 7 17pro 17promax</span>
+          <span class="product-cta">Xem ngay →</span>
+        </a>
+
+        <!-- Sản phẩm 4 -->
+        <a class="product-card p4" href="https://shop.tiktok.com/vn/pdp/1735876120706319807?_d=ef458990ifh54f&_svg=1&encode_params=MIIBQQQMMN93sA1zdOTSA_J-BIIBHRnEX0dtAhlSO58MzvU9G7XWHG27o_k77FU8jfHhdOogjHSqaJrJl_SExJ8mENiBDUCPeW24_LGbh6N-WJ3eJ6KFMcSqkFuTFo0jeHlqiz2Kk6UWM5u3aIVwZt6tc2DLCKbdlOd6oNdZVUhwvrFpuUpNnbsi96wjP1Dz4--cErWbyR-wR7J80IjHoznbDcEbvjYfquU5iYEPLGoF8FTfiblLaaodWTOadYk1uXWi1mudbTeMdi-Nu-Kq5f3kWGRkcfK6Y-xYzDQVGNSV3s-gaTywZMmFBjbNbwg4K0T__q6FWmWpLn7ynT_b2CRQofleSGPn3ZDZyk1Bqse6aA3KAgT_NumRGDUiMbRkTtLPy9w2qTlTGyqQj08MzYd6VgQQL0ClUzJmXwEkqoFFfX2UeA%3D%3D&og_info=%7B%22title%22%3A%22Cartoon+Teddy+Bear+Cute+Lanyard+Chain+Cute+Japanese+and+Korean+Portable+Wrist+Strap+Lanyard+Pendant+Anti+Lost+Artifact+for+Women+for+IPhone+Case+LT%22%2C%22image%22%3A%22https%3A%5C%2F%5C%2Fp16-oec-sg.ibyteimg.com%5C%2Ftos-alisg-i-aphluv4xwc-sg%5C%2Fdccf2417b40847b29ac8421c35d140d9~tplv-aphluv4xwc-resize-webp%3A260%3A260.webp%3Fdr%3D15582%26t%3D555f072d%26ps%3D933b5bde%26shp%3D7745054a%26shcp%3D9b759fb9%26idc%3Dmy2%26from%3D2001012042%22%7D&panel_source_v2=share_panel&share_app_id=1180&share_enter_from=&share_link_id=62AB164C-A14C-4DFA-A095-4F5A0B2193B8&share_region=VN&social_share_type=15&timestamp=1786832963&trackParams=%7B%22enable_shop_tab_popup%22%3A1%2C%22device_id%22%3A%227389261949962421766%22%2C%22enter_from_info%22%3A%22product_share_outside%22%2C%22source_page_type%22%3A%22product_share%22%2C%22traffic_source_list%22%3A%5B7%5D%2C%22traffic_source%22%3A7%7D&tt_from=copy&u_code=&ug_btm=b7349%2Cb6661&unique_id=&utm_campaign=client_share&utm_medium=ios&utm_source=copy">
+          <div class="product-img">
+            <img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/59c917ae426640da871e54281d39e702~tplv-aphluv4xwc-resize-webp:750:750.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=607f11de&idc=my2&from=2378011839" alt="Chill Mode" loading="lazy" onerror="this.remove()">
+          </div>
+          <span class="product-name">Cartoon Teddy Bear Cute Lanyard Chain Cute Japanese and Korean</span>
+          <span class="product-cta">Xem ngay →</span>
+        </a>
+
+        <!-- Sản phẩm 5 -->
+        <a class="product-card p5" href="https://shop.tiktok.com/vn/pdp/1735876293775820223?_d=ef458990ifh54f&_svg=1&encode_params=MIIBQQQMRVpDRJ6o3srKrXWkBIIBHa_ywGnUjkfyYqFs9QhARV1pV43RT8Ufp6-AAo0EQOKzi8V55Q82TTCsQ0wl2RYxNEUsEvdVR1Uoxyf3QX9vJBbW9SY5irYkLL_qa5f_ZK4d9Z6OiBSuHXcT2HTTtvkwR86hBQf7hfyc-EpPU8d_SqEsjPBT2hM3WTLbxXwcSJEJGt6gTyLwxhorEgrMSulB_8kFXg2CM3fRyX-wH1GUw7575grifw0PERZJMO1hdh6LSzUpG4DlOyZhAarlmh8Mg_qRQgw4ACCXWa1VbCUgBpl4Z3TGZGNewljCp8L6t50FC4zIVbLUupX9YzV1jR78lXOKxjnScmnkIlx4r3tCG7CNI2LyF_5KZv0xTlgDrPZYXTTIrf6SWyQ599KYTgQQiNI7hlmjF0tiK_rjgZjYsA%3D%3D&og_info=%7B%22title%22%3A%22An+adorable+cartoon+Little+Bear+mobile+phone+stand+with+adhesive+fixing+points+It+can+be+folded+and+is+suitable+for+Apple+devices+such+as+iPhone+17+16+15+14+13+12+with+ultra-thin+back+adhesive+ring+and+desktop+support%22%2C%22image%22%3A%22https%3A%5C%2F%5C%2Fp16-oec-sg.ibyteimg.com%5C%2Ftos-alisg-i-aphluv4xwc-sg%5C%2F6a09495cb8804a43826c28e9ccaf1d4f~tplv-aphluv4xwc-resize-webp%3A260%3A260.webp%3Fdr%3D15582%26t%3D555f072d%26ps%3D933b5bde%26shp%3D7745054a%26shcp%3D9b759fb9%26idc%3Dmy2%26from%3D2001012042%22%7D&panel_source_v2=share_panel&share_app_id=1180&share_enter_from=&share_link_id=37549062-B273-49B2-BA59-911105FBD486&share_region=VN&social_share_type=15&timestamp=1786833053&trackParams=%7B%22enable_shop_tab_popup%22%3A1%2C%22device_id%22%3A%227389261949962421766%22%2C%22enter_from_info%22%3A%22product_share_outside%22%2C%22source_page_type%22%3A%22product_share%22%2C%22traffic_source_list%22%3A%5B7%5D%2C%22traffic_source%22%3A7%7D&tt_from=copy&u_code=&ug_btm=b7349%2Cb6661&unique_id=&utm_campaign=client_share&utm_medium=ios&utm_source=copy">
+          <div class="product-img">
+            <img src="https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4654618c212745c689392824ad8f327d~tplv-aphluv4xwc-resize-webp:800:800.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=607f11de&idc=my2&from=2378011839" alt="Main Character" loading="lazy" onerror="this.remove()">
+          </div>
+          <span class="product-name">An adorable cartoon Little Bear mobile phone stand with adhesive fixing points</span>
+          <span class="product-cta">Xem ngay →</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="brand-footer">
+      <!-- 👉 3 icon dưới đây có thể trỏ cùng link với 3 nút mạng xã hội phía trên -->
+      <a href="https://www.tiktok.com/@quatangcotsong67" target="_blank" rel="noopener" aria-label="TikTok">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M16 3c.6 2.4 2.2 3.9 4.6 4.2v3.1c-1.6.1-3.1-.4-4.6-1.3v6.4c0 3.3-2.7 5.6-5.7 5.6-3.2 0-5.7-2.5-5.7-5.6 0-3.2 2.7-5.7 5.9-5.5v3.2c-1.4-.2-2.7.9-2.7 2.3 0 1.3 1.1 2.3 2.5 2.3 1.5 0 2.7-1.2 2.7-2.9V3h3z" fill="#121212"/></svg>
+      </a>
+      <a href="https://www.instagram.com/opology2006/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#121212" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#121212" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.1" fill="#121212"/></svg>
+      </a>
+      <span class="handle">@opology.vn</span>
+      <span class="fsep">|</span>
+      <span class="hashtag">#OpologyStyle</span>
+      <span class="fsep">|</span>
+      <span class="site">
+        <a href="https://opology.vn" target="_blank" rel="noopener" aria-label="Website" style="background:transparent;width:auto;height:auto;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.8 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.8-3.8-9S9.5 5.5 12 3z" stroke="#fff" stroke-width="2"/></svg>
+        </a>
+        opology.vn
+      </span>
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>
